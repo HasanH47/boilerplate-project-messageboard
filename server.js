@@ -4,13 +4,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
 
 const apiRoutes = require("./routes/api.js");
 const fccTestingRoutes = require("./routes/fcctesting.js");
 const runner = require("./test-runner");
 
 const app = express();
-
+app.use(
+  helmet({
+    frameguard: { action: "sameorigin" }, // X-Frame-Options
+    dnsPrefetchControl: { allow: false }, // X-DNS-Prefetch-Control
+    referrerPolicy: { policy: "same-origin" }, // Referrer-Policy
+  })
+);
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,

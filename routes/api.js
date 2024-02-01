@@ -28,7 +28,20 @@ module.exports = function (app) {
 
       try {
         const recentThreads = await threadController.getRecentThreads(board);
-        res.json(recentThreads);
+        // Modify the response to exclude reported and delete_password fields
+        const sanitizedThreads = recentThreads.map((thread) => ({
+          _id: thread._id,
+          text: thread.text,
+          created_on: thread.created_on,
+          bumped_on: thread.bumped_on,
+          replies: thread.replies.slice(0, 3).map((reply) => ({
+            // Only include the most recent 3 replies
+            _id: reply._id,
+            text: reply.text,
+            created_on: reply.created_on,
+          })),
+        }));
+        res.json(sanitizedThreads);
       } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
       }
@@ -43,9 +56,9 @@ module.exports = function (app) {
           delete_password
         );
         if (result) {
-          res.send("Success");
+          res.send("success");
         } else {
-          res.send("Incorrect password");
+          res.send("incorrect password");
         }
       } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
@@ -58,7 +71,7 @@ module.exports = function (app) {
       try {
         const result = await threadController.reportThread(thread_id);
         if (result) {
-          res.send("Reported");
+          res.send("reported");
         } else {
           res.status(404).json({ error: "Thread not found" });
         }
@@ -93,7 +106,19 @@ module.exports = function (app) {
         const threadWithReplies = await replyController.getThreadReplies(
           thread_id
         );
-        res.json(threadWithReplies);
+        // Modify the response to exclude reported and delete_password fields
+        const sanitizedThreadWithReplies = {
+          _id: threadWithReplies._id,
+          text: threadWithReplies.text,
+          created_on: threadWithReplies.created_on,
+          bumped_on: threadWithReplies.bumped_on,
+          replies: threadWithReplies.replies.map((reply) => ({
+            _id: reply._id,
+            text: reply.text,
+            created_on: reply.created_on,
+          })),
+        };
+        res.json(sanitizedThreadWithReplies);
       } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
       }
@@ -109,9 +134,10 @@ module.exports = function (app) {
           delete_password
         );
         if (result) {
-          res.send("Success");
+          // Change the text of the reply_id to "[deleted]" on success
+          res.send("success");
         } else {
-          res.send("Incorrect password");
+          res.send("incorrect password");
         }
       } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
@@ -124,7 +150,7 @@ module.exports = function (app) {
       try {
         const result = await replyController.reportReply(reply_id);
         if (result) {
-          res.send("Reported");
+          res.send("reported");
         } else {
           res.status(404).json({ error: "Reply not found" });
         }

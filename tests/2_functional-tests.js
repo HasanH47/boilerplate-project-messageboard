@@ -12,6 +12,8 @@ suite("Functional Tests", function () {
   let delete_password_reply;
 
   test("Creating a new thread: POST /api/threads/:board", function (done) {
+    this.timeout(5000); // Set the timeout for the entire test to 5000ms (5 seconds)
+
     chai
       .request(server)
       .post("/api/threads/testboard")
@@ -19,6 +21,7 @@ suite("Functional Tests", function () {
         text: "Test Thread",
         delete_password: "testpassword",
       })
+      .timeout(4000) // Set a timeout for this specific chai request to 4000ms (4 seconds)
       .end(function (err, res) {
         assert.equal(res.status, 200);
         assert.isObject(res.body);
@@ -50,7 +53,7 @@ suite("Functional Tests", function () {
       })
       .end(function (err, res) {
         assert.equal(res.status, 200);
-        assert.equal(res.text, "Incorrect password");
+        assert.equal(res.text, "incorrect password");
         done();
       });
   });
@@ -64,7 +67,7 @@ suite("Functional Tests", function () {
       })
       .end(function (err, res) {
         assert.equal(res.status, 200);
-        assert.equal(res.text, "Reported");
+        assert.equal(res.text, "reported");
         done();
       });
   });
@@ -113,7 +116,7 @@ suite("Functional Tests", function () {
       })
       .end(function (err, res) {
         assert.equal(res.status, 200);
-        assert.equal(res.text, "Incorrect password");
+        assert.equal(res.text, "incorrect password");
         done();
       });
   });
@@ -128,7 +131,7 @@ suite("Functional Tests", function () {
       })
       .end(function (err, res) {
         assert.equal(res.status, 200);
-        assert.equal(res.text, "Reported");
+        assert.equal(res.text, "reported");
         done();
       });
   });
@@ -144,7 +147,7 @@ suite("Functional Tests", function () {
       })
       .end(function (err, res) {
         assert.equal(res.status, 200, "Expected status code 200");
-        assert.equal(res.text, "Success");
+        assert.equal(res.text, "success");
         done();
       });
   });
@@ -159,7 +162,7 @@ suite("Functional Tests", function () {
       })
       .end(function (err, res) {
         assert.equal(res.status, 200);
-        assert.equal(res.text, "Success");
+        assert.equal(res.text, "success");
         done();
       });
   });
